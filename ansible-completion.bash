@@ -11,7 +11,7 @@ _ansible() {
 }
 
 _ansible_complete_host() {
-    local host=$(ansible all --list-host 2> /dev/null)
+    local host=$(ansible all --list-hosts 2> /dev/null)
     local current_word=$1
 
     COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
