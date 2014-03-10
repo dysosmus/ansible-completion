@@ -1,17 +1,17 @@
 #!/bin/env bash
 
-
-CACHE_TIMEOUT=60 # sec
+if [[ -z "$ANSIBLE_COMPLETION_CACHE_TIMEOUT" ]]; then
+    ANSIBLE_COMPLETION_CACHE_TIMEOUT=120 # sec
+fi
 
 _ansible() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
+    local previous_word=${COMP_WORDS[COMP_CWORD - 1]}
 
-    if [[ "$current_word" == -* ]]; then
-        if [[ "$current_word" == "-m" ]] || [[ "$current_word" == "--module-name" ]]; then #@todo check the prev word not the current 
-            _ansible_complete_option_module_name "$current_word"
-        else
-            _ansible_complete_options "$current_word"
-        fi
+    if [[ "$previous_word" == "-m" ]] || [[ "$previous_word" == "--module-name" ]]; then 
+        _ansible_complete_option_module_name "$current_word"
+    elif [[ "$current_word" == -* ]]; then
+        _ansible_complete_options "$current_word"
     else
         _ansible_complete_host "$current_word"
     fi
@@ -82,20 +82,21 @@ _ansible_complete_options() {
 }   
 
 _ansible_get_module_list() {
+    echo > /tmp/a
+
     local module_path=$(_ansible_get_module_path) 
     local hash_module_path=$(md5 -q -s "$module_path")
     # /tmp/<pid>.<hash of the module path if exsist>.module-name.ansible.completion
-    local cache_file=/tmp/${$}.${module_path:+"$hash_module_path"}.module-name.ansible.completion 
+    local cache_file=/tmp/${$}.${module_path:+"$hash_module_path".}module-name.ansible.completion 
 
     if [ -f "$cache_file" ]; then
         local timestamp=$(expr $(_timestamp) - $(_timestamp_last_modified $cache_file))
-        if [ "$timestamp" -gt "$CACHE_TIMEOUT" ]  ; then
-            # Update the cache 
-            $(ansible-doc ${module_path:+-M "module_path"} -l | awk '{print $1}') > $cache_file            
+        if [ "$timestamp" -gt "$ANSIBLE_COMPLETION_CACHE_TIMEOUT" ]  ; then
+            echo $(ansible-doc ${module_path:+-M "module_path"} -l | awk '{print $1}') > $cache_file            
         fi
     else 
         # We need to cache the output because ansible-doc is so fucking slow 
-        $(ansible-doc -l | awk '{print $1}') > $cache_file
+        echo $(ansible-doc -l | awk '{print $1}') > $cache_file
     fi
 
     echo $(cat $cache_file)
