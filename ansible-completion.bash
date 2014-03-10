@@ -1,10 +1,17 @@
 #!/bin/env bash
 
+
+CACHE_TIMEOUT=60 # sec
+
 _ansible() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
 
     if [[ "$current_word" == -* ]]; then
-        _ansible_complete_options "$current_word"
+        if [[ "$current_word" == "-m" ]] || [[ "$current_word" == "--module-name" ]]; then #@todo check the prev word not the current 
+            _ansible_complete_option_module_name "$current_word"
+        else
+            _ansible_complete_options "$current_word"
+        fi
     else
         _ansible_complete_host "$current_word"
     fi
@@ -25,13 +32,30 @@ _ansible_complete_host() {
 
 # Look inside COMP_WORDS to find a value for the inventory-file argument
 # and echo the value (or echo an empty string)
-_ansible_get_inventory_file() {
+_ansible_get_inventory_file() { # @todo refactor with _ansible_get_module_path
     local index=0
 
     for word in ${COMP_WORDS[@]}; do
         index=$(expr $index + 1)
         if [ "$word" != "${COMP_WORDS[COMP_CWORD]}" ]; then
             if [[ "$word" == "-i" ]] || [[ "$word" == "--inventory-file" ]]; then
+                echo ${COMP_WORDS[$index]}
+                return 0
+            fi
+        fi
+    done
+
+    echo ""
+    return 1
+}
+
+_ansible_get_module_path() { # @todo @see _ansible_get_inventory_file
+    local index=0
+
+    for word in ${COMP_WORDS[@]}; do
+        index=$(expr $index + 1)
+        if [ "$word" != "${COMP_WORDS[COMP_CWORD]}" ]; then
+            if [[ "$word" == "-M" ]] || [[ "$word" == "--module-path" ]]; then
                 echo ${COMP_WORDS[$index]}
                 return 0
             fi
@@ -56,3 +80,38 @@ _ansible_complete_options() {
 
     COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
 }   
+
+_ansible_get_module_list() {
+    local module_path=$(_ansible_get_module_path) 
+    local hash_module_path=$(md5 -q -s "$module_path")
+    # /tmp/<pid>.<hash of the module path if exsist>.module-name.ansible.completion
+    local cache_file=/tmp/${$}.${module_path:+"$hash_module_path"}.module-name.ansible.completion 
+
+    if [ -f "$cache_file" ]; then
+        local timestamp=$(expr $(_timestamp) - $(_timestamp_last_modified $cache_file))
+        if [ "$timestamp" -gt "$CACHE_TIMEOUT" ]  ; then
+            # Update the cache 
+            $(ansible-doc ${module_path:+-M "module_path"} -l | awk '{print $1}') > $cache_file            
+        fi
+    else 
+        # We need to cache the output because ansible-doc is so fucking slow 
+        $(ansible-doc -l | awk '{print $1}') > $cache_file
+    fi
+
+    echo $(cat $cache_file)
+}
+
+_ansible_complete_option_module_name() {
+    local current_word=$1
+    local module_list=$(_ansible_get_module_list)
+
+    COMPREPLY=( $( compgen -W "$module_list" -- "$current_word" ) )
+}
+
+_timestamp() {
+    echo $(date +%s)
+}
+
+_timestamp_last_modified()  {
+    echo $(stat -f "%Sm" -t "%s" $1)
+}
