@@ -82,8 +82,6 @@ _ansible_complete_options() {
 }   
 
 _ansible_get_module_list() {
-    echo > /tmp/a
-
     local module_path=$(_ansible_get_module_path) 
     local hash_module_path=$(md5 -q -s "$module_path")
     # /tmp/<pid>.<hash of the module path if exsist>.module-name.ansible.completion
