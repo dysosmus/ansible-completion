@@ -89,12 +89,13 @@ _ansible_get_module_list() {
 
     if [ -f "$cache_file" ]; then
         local timestamp=$(expr $(_timestamp) - $(_timestamp_last_modified $cache_file))
-        if [ "$timestamp" -gt "$ANSIBLE_COMPLETION_CACHE_TIMEOUT" ]  ; then
-            echo $(ansible-doc ${module_path:+-M "module_path"} -l | awk '{print $1}') > $cache_file            
+        if [ "$timestamp" -gt "$ANSIBLE_COMPLETION_CACHE_TIMEOUT" ]; then
+            #@todo refactor ?
+            ansible-doc ${module_path:+-M "$module_path"} -l | awk '{print $1}' > $cache_file            
         fi
     else 
         # We need to cache the output because ansible-doc is so fucking slow 
-        echo $(ansible-doc -l | awk '{print $1}') > $cache_file
+        ansible-doc ${module_path:+-M "$module_path"} -l | awk '{print $1}' > $cache_file
     fi
 
     echo $(cat $cache_file)
