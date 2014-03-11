@@ -18,7 +18,7 @@ Installation
 
 Good to know
 ------------
-If the --module-path (-M) or --inventory-file (-i) is on the command line, the completion will use it.
+If the `--module-path` (`-M`) or `--inventory-file` (`-i`) is on the command line, the completion will use it.
 
-For the completion on module name, the completion script build a cache of modules names. 
-You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION_CACHE_TIMEOUT`, the default value is 120 secondes.
+For the completion on module name, the completion script build a cache of modules names.<br /> 
+You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION_CACHE_TIMEOUT`, the default value is `120` secondes.
