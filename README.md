@@ -1,9 +1,9 @@
 ansible-completion
 ==================
-Basic bash completion for Ansible.
+Provide a  bash completion on host name, module name and options for [ansible](https://github.com/ansible/ansible "ansible git repository").
 
 Installation
----------------------
+------------
 
  1. Get the `ansible-completion.bash` file.
 
@@ -15,4 +15,10 @@ Installation
  		source ~/git-flow-completion.bash
  		
  4. Reload your shell with something like `source ~/.bashrc` or `source ~/.profile` 
- 
+
+Good to know
+------------
+If the --module-path (-M) or --inventory-file (-i) is on the command line, the completion will use it.
+
+For the completion on module name, the completion script build a cache of modules names. 
+You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION_CACHE_TIMEOUT`, the default value is 120 secondes.
