@@ -8,7 +8,7 @@ _ansible() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
     local previous_word=${COMP_WORDS[COMP_CWORD - 1]}
 
-    if [[ "$previous_word" == "-m" ]] || [[ "$previous_word" == "--module-name" ]]; then 
+    if [[ "$previous_word" == "-m" ]] || [[ "$previous_word" == "--module-name" ]]; then
         _ansible_complete_option_module_name "$current_word"
     elif [[ "$current_word" == -* ]]; then
         _ansible_complete_options "$current_word"
@@ -19,8 +19,8 @@ _ansible() {
 
 complete -o default -F _ansible ansible
 
-# Compute completion with the available hosts, 
-# if a inventory file is specified in 
+# Compute completion with the available hosts,
+# if a inventory file is specified in
 # the command line the completion will use it
 _ansible_complete_host() {
     local current_word=$1
@@ -69,32 +69,32 @@ _ansible_get_module_path() { # @todo @see _ansible_get_inventory_file
 # Compute completion for the generics options
 _ansible_complete_options() {
     local current_word=$1
-    local options="-h --help -v --verbose -f --forks -i --inventory-file 
-    -k --ask-pass --private-key -K --ask-sudo-pass 
-    --ask-su-pass --ask-vault-pass --vault-password-file 
-    --list-hosts -M --module-path -l --limit -T --timeout 
-    -o --one-line -t --tree -s --sudo -U --sudo-user -u 
-    --user -S --su -R --su-user -c --connection -P 
-    --poll -B --background -C --check -a --args -m 
+    local options="-h --help -v --verbose -f --forks -i --inventory-file
+    -k --ask-pass --private-key -K --ask-sudo-pass
+    --ask-su-pass --ask-vault-pass --vault-password-file
+    --list-hosts -M --module-path -l --limit -T --timeout
+    -o --one-line -t --tree -s --sudo -U --sudo-user -u
+    --user -S --su -R --su-user -c --connection -P
+    --poll -B --background -C --check -a --args -m
     --module-name"
 
     COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
-}   
+}
 
 _ansible_get_module_list() {
-    local module_path=$(_ansible_get_module_path) 
-    local hash_module_path=$(md5 -q -s "$module_path")
+    local module_path=$(_ansible_get_module_path)
+    local hash_module_path=$(_md5 "$module_path")
     # /tmp/<pid>.<hash of the module path if exsist>.module-name.ansible.completion
-    local cache_file=/tmp/${$}.${module_path:+"$hash_module_path".}module-name.ansible.completion 
+    local cache_file=/tmp/${$}.${module_path:+"$hash_module_path".}module-name.ansible.completion
 
     if [ -f "$cache_file" ]; then
         local timestamp=$(expr $(_timestamp) - $(_timestamp_last_modified $cache_file))
         if [ "$timestamp" -gt "$ANSIBLE_COMPLETION_CACHE_TIMEOUT" ]; then
             #@todo refactor ?
-            ansible-doc ${module_path:+-M "$module_path"} -l | awk '{print $1}' > $cache_file            
+            ansible-doc ${module_path:+-M "$module_path"} -l | awk '{print $1}' > $cache_file
         fi
-    else 
-        # We need to cache the output because ansible-doc is so fucking slow 
+    else
+        # We need to cache the output because ansible-doc is so fucking slow
         ansible-doc ${module_path:+-M "$module_path"} -l | awk '{print $1}' > $cache_file
     fi
 
@@ -113,5 +113,30 @@ _timestamp() {
 }
 
 _timestamp_last_modified()  {
-    echo $(stat -f "%Sm" -t "%s" $1)
+    local timestamp=''
+
+    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+        # linux
+        timestamp=$(stat -c "%Z" $1)
+    else
+        # freebsd/darwin
+        timestamp=$(stat -f "%Sm" -t "%s" $1)
+    fi
+
+    echo $timestamp
+}
+
+_md5() {
+    local to_hash=$1
+    local md5_hash=''
+
+    if hash md5 2>/dev/null; then
+        # freebsd/darwin
+        md5_hash=$(md5 -q -s "$to_hash")
+    else
+        # linux
+        md5_hash=$(echo "$to_hash" | md5sum |awk {'print $1'})
+    fi
+
+    echo $md5_hash
 }
