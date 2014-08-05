@@ -12,7 +12,7 @@ Installation
 
  3. **Or** copy/move it where you want and then load the `ansible-completion.bash` file in your `~/.bashrc` or `~/.profile` like that:
 
- 		source ~/git-flow-completion.bash
+ 		source ~/ansible-completion.bash
 
  4. Reload your shell with something like `source ~/.bashrc` or `source ~/.profile`
 
