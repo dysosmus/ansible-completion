@@ -25,7 +25,14 @@ complete -o default -F _ansible ansible
 _ansible_complete_host() {
     local current_word=$1
     local inventory_file=$(_ansible_get_inventory_file)
-    local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1)
+    local grep_opts="-o"
+    if [ -z "$inventory_file" ] && [ -f ansible.cfg ]; then
+        inventory_file=$(awk '/^hostfile/{ print $3 }' ansible.cfg)
+    fi
+    # if inventory_file points to a directory, search recursively
+    [ -d "$inventory_file" ] && grep_opts="$grep_opts -hr"
+    local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 && \
+        [ -e "$inventory_file" ] && grep $grep_opts '\[.*\]' "$inventory_file" | tr -d [])
 
     COMPREPLY=( $( compgen -W "$hosts" -- "$current_word" ) )
 }
