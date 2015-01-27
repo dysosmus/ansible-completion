@@ -1,6 +1,6 @@
 ansible-completion
 ==================
-Provide a  bash completion on host name, module name and options for [ansible](https://github.com/ansible/ansible "ansible git repository").
+Provide a bash completion on host name, module name and options for [ansible](https://github.com/ansible/ansible "ansible git repository").
 
 Installation
 ------------
@@ -23,6 +23,7 @@ If the `--module-path` (`-M`) or `--inventory-file` (`-i`) is on the command lin
 For the completion on module name, the completion script build a cache of modules names.<br />
 You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION_CACHE_TIMEOUT`, the default value is `120` secondes.
 
-Contributor
+Contributors
 -----------
 - [mrqwer88](https://github.com/mrqwer88)
+- [wolfgangkarall](https://github.com/wolfgangkarall)
