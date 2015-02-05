@@ -24,17 +24,30 @@ complete -o default -F _ansible ansible
 # the command line the completion will use it
 _ansible_complete_host() {
     local current_word=$1
+    local first_words=${current_word%:*}
+    local last_word=${current_word##*:}
     local inventory_file=$(_ansible_get_inventory_file)
     local grep_opts="-o"
+    # if $inventory_file is empty and a ansible.cfg file exisit
+    # search in the ansible.cfg for a hostfile entry
     if [ -z "$inventory_file" ] && [ -f ansible.cfg ]; then
         inventory_file=$(awk '/^hostfile/{ print $3 }' ansible.cfg)
     fi
     # if inventory_file points to a directory, search recursively
-    [ -d "$inventory_file" ] && grep_opts="$grep_opts -hr"
+    [ -d "$inventory_file" ] && grep_opts="$grep_opts -hR"
     local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 && \
         [ -e "$inventory_file" ] && grep $grep_opts '\[.*\]' "$inventory_file" | tr -d [])
+    # list the hostnames with ansible command line and complete the list
+    # by searching the group labels in the inventory file (if we have it)
+    hosts="$hosts
+    $(echo "$hosts" | sed -e 's/\([^[:space:]]\)/\&\1/p' -e 's/&/!/p' -e 's/!/"/p' )"
+    # add the !, & notation to the hostname
 
-    COMPREPLY=( $( compgen -W "$hosts" -- "$current_word" ) )
+    COMPREPLY=( $( compgen -W "$hosts" -- "$last_word" ) )
+
+    if [ "$first_words" != "$last_word" ]; then
+        COMPREPLY="$first_words:$COMPREPLY"
+    fi
 }
 
 # Look inside COMP_WORDS to find a value for the inventory-file argument
