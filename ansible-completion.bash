@@ -40,13 +40,14 @@ _ansible_complete_host() {
     # list the hostnames with ansible command line and complete the list
     # by searching the group labels in the inventory file (if we have it)
     hosts="$hosts
-    $(echo "$hosts" | sed -e 's/\([^[:space:]]\)/\&\1/p' -e 's/&/!/p' -e 's/!/"/p' )"
+    $(echo "$hosts" | sed -e 's/\([^[:space:]]\)/\&\1/p' -e 's/&/!/p' )"
     # add the !, & notation to the hostname
 
-    COMPREPLY=( $( compgen -W "$hosts" -- "$last_word" ) )
 
     if [ "$first_words" != "$last_word" ]; then
-        COMPREPLY="$first_words:$COMPREPLY"
+        COMPREPLY=( $( compgen -P "$first_words:" -W "$hosts" -- "$last_word" ) )
+    else
+        COMPREPLY=( $( compgen -W "$hosts" -- "$last_word" ) )
     fi
 }
 
