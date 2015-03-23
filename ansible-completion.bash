@@ -35,8 +35,11 @@ _ansible_complete_host() {
     fi
     # if inventory_file points to a directory, search recursively
     [ -d "$inventory_file" ] && grep_opts="$grep_opts -hR"
-    local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 && \
-        [ -e "$inventory_file" ] && grep $grep_opts '\[.*\]' "$inventory_file" | tr -d [])
+    local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 \
+        && [ -e "$inventory_file" ] \
+        && [ ! -x "$inventory_file" ] \
+        && grep $grep_opts '\[.*\]' "$inventory_file" | tr -d [])
+
     # list the hostnames with ansible command line and complete the list
     # by searching the group labels in the inventory file (if we have it)
     hosts="$hosts
