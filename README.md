@@ -25,5 +25,6 @@ You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION
 
 Contributors
 -----------
+- [DenKoren](https://github.com/DenKoren)
 - [mrqwer88](https://github.com/mrqwer88)
 - [wolfgangkarall](https://github.com/wolfgangkarall)
