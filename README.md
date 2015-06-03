@@ -16,6 +16,23 @@ Installation
 
  4. Reload your shell with something like `source ~/.bashrc` or `source ~/.profile`
 
+#### Alternative way for Mac OS
+
+1. Clone the repo, install bash an auto-completion2 with homebew: ```brew install bash bash-completion2```
+2. Change your terminal bash to a homebrew one by setting the ```command``` option to ```/usr/local/bin/bash```
+3. Add the following code to your ```~/.profile```:
+
+	```
+	if [ -f $(brew --prefix)/share/bash-completion/bash_completion ]; then
+	  . $(brew --prefix)/share/bash-completion/bash_completion
+	fi
+	```
+2. Create a symbolik link for ```	ansible-completion.bash```:
+
+ ```
+ ln -vs ~/soft/ansible-completion/ansible-completion.bash /usr/local/share/bash-completion/completions/ansible
+	```
+
 Good to know
 ------------
 If the `--module-path` (`-M`) or `--inventory-file` (`-i`) is on the command line, the completion will use it.
