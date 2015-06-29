@@ -33,6 +33,8 @@ _ansible_complete_host() {
     if [ -z "$inventory_file" ]; then
         [ -f /etc/ansible/ansible.cfg ] && inventory_file=$(awk \
             '/^inventory/{ print $3 }' /etc/ansible/ansible.cfg)
+        [ -f ${HOME}/.ansible.cfg ] && inventory_file=$(awk \
+            '/^inventory/{ print $3 }' ${HOME}/.ansible.cfg)
         [ -f ansible.cfg ] && inventory_file=$(awk '/^inventory/{ print $3 }' ansible.cfg)
     fi
     # if inventory_file points to a directory, search recursively
