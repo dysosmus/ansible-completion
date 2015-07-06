@@ -33,7 +33,8 @@ _ansible_complete_host() {
     if [ -z "$inventory_file" ]; then
         [ -f /etc/ansible/ansible.cfg ] && inventory_file=$(awk \
             '/^inventory/{ print $3 }' /etc/ansible/ansible.cfg)
-        [ -f ansible.cfg ] && inventory_file=$(awk '/^(hostfile|inventory)/{ print $3 }' ansible.cfg)
+        [ -f ansible.cfg ] && inventory_file=$(awk \
+            '/^(hostfile|inventory)/{ print $3 }' ansible.cfg)
     fi
     # if inventory_file points to a directory, search recursively
     [ -d "$inventory_file" ] && grep_opts="$grep_opts -hR"
@@ -47,7 +48,6 @@ _ansible_complete_host() {
     hosts="$hosts
     $(echo "$hosts" | sed -e 's/\([^[:space:]]\)/\&\1/p' -e 's/&/!/p' )"
     # add the !, & notation to the hostname
-
 
     if [ "$first_words" != "$last_word" ]; then
         COMPREPLY=( $( compgen -P "$first_words:" -W "$hosts" -- "$last_word" ) )
