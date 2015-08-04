@@ -97,14 +97,11 @@ _ansible_get_module_path() { # @todo @see _ansible_get_inventory_file
 # Compute completion for the generics options
 _ansible_complete_options() {
     local current_word=$1
-    local options="-h --help -v --verbose -f --forks -i --inventory-file
-    -k --ask-pass --private-key -K --ask-sudo-pass
-    --ask-su-pass --ask-vault-pass --vault-password-file
-    --list-hosts -M --module-path -l --limit -T --timeout
-    -o --one-line -t --tree -s --sudo -U --sudo-user -u
-    --user -S --su -R --su-user -c --connection -P
-    --poll -B --background -C --check -a --args -m
-    --module-name"
+    local options=$(             \
+        ansible --help         | \
+        sed '1,/Options/d'     | \
+        grep -Eoie "--?[a-z-]+"   \
+    )
 
     COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
 }
