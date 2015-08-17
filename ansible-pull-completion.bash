@@ -2,20 +2,15 @@
 
 _ansible-pull() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
-    local previous_word=${COMP_WORDS[COMP_CWORD - 1]}
-    local options="create decrypt edit encrypt rekey view"
+    local options="--accept-host-key -K --ask-sudo-pass -C --checkout
+                   -d --directory -e --extra-vars -f --force -h --help
+                   -i --inventory-file --key-file -m --module-name -o
+                   --only-if-changed --purge -s --sleep -t --tags -U
+                   --url --vault-password-file -v --verbose"
 
-    case $previous_word in
-        create|decrypt|edit|encrypt|rekey|view)
-            options="--debug --vault-password-file -h --help"
-            if [[ "$current_word" == -* ]]; then
-                COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
-            fi
-            ;;
-        *)
-            COMPREPLY=( $( compgen -fdW "$options" -- "$current_word" ) )
-            ;;
-    esac
+    if [[ "$current_word" == -* ]]; then
+        COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
+    fi
 }
 
 complete -o default -F _ansible-pull ansible-pull
