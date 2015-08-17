@@ -43,6 +43,7 @@ You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION
 Contributors
 -----------
 - [ogarcia](https://github.com/ogarcia)
+- [pheanex](https://github.com/pheanex) (ansible-* completions) 
 - [DenKoren](https://github.com/DenKoren)
 - [hryamzik](https://github.com/hryamzik) 
 - [mrqwer88](https://github.com/mrqwer88)
