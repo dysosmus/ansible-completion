@@ -1,6 +1,6 @@
 #!/bin/env bash
 
-_ansible-pull() {
+_ansible-vault() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
     local options="--accept-host-key -K --ask-sudo-pass -C --checkout
                    -d --directory -e --extra-vars -f --force -h --help
