@@ -32,15 +32,18 @@ _ansible_complete_host() {
     # search in the ansible.cfg for a hostfile entry
     if [ -z "$inventory_file" ]; then
         [ -f /etc/ansible/ansible.cfg ] && inventory_file=$(awk \
-            '/^inventory/{ print $3 }' /etc/ansible/ansible.cfg)
+            '/^inventory/{ print $3 }' /etc/ansible/ansible.cfg) && \
+            eval inventory_file=${inventory_file}
         [ -f ${HOME}/.ansible.cfg ] && inventory_file=$(awk \
-            '/^inventory/{ print $3 }' ${HOME}/.ansible.cfg)
+            '/^inventory/{ print $3 }' ${HOME}/.ansible.cfg) && \
+            eval inventory_file=${inventory_file}
         [ -f ansible.cfg ] && inventory_file=$(awk \
-            '/^(hostfile|inventory)/{ print $3 }' ansible.cfg)
+            '/^(hostfile|inventory)/{ print $3 }' ansible.cfg) && \
+            eval inventory_file=${inventory_file}
     fi
     # if inventory_file points to a directory, search recursively
     [ -d "$inventory_file" ] && grep_opts="$grep_opts -hR"
-    local hosts=$(eval ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 \
+    local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 \
         && [ -e "$inventory_file" ] \
         && [ -d "$inventory_file" -o ! -x "$inventory_file" ] \
         && grep $grep_opts '\[.*\]' "$inventory_file" | tr -d [] | cut -d: -f1)
