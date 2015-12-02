@@ -28,16 +28,27 @@ _ansible_complete_host() {
     local last_word=${current_word##*:}
     local inventory_file=$(_ansible_get_inventory_file)
     local grep_opts="-o"
-    # if $inventory_file is empty and a ansible.cfg file exisit
+
+    # if $inventory_file is empty and a ansible.cfg file exist
     # search in the ansible.cfg for a hostfile entry
     if [ -z "$inventory_file" ]; then
         [ -f /etc/ansible/ansible.cfg ] && inventory_file=$(awk \
-            '/^inventory/{ print $3 }' /etc/ansible/ansible.cfg)
+            '/^inventory/{ print $3 }' /etc/ansible/ansible.cfg) && \
+            inventory_file=${inventory_file}
         [ -f ${HOME}/.ansible.cfg ] && inventory_file=$(awk \
-            '/^inventory/{ print $3 }' ${HOME}/.ansible.cfg)
+            '/^inventory/{ print $3 }' ${HOME}/.ansible.cfg) && \
+            inventory_file=${inventory_file}
         [ -f ansible.cfg ] && inventory_file=$(awk \
-            '/^(hostfile|inventory)/{ print $3 }' ansible.cfg)
+            '/^(hostfile|inventory)/{ print $3 }' ansible.cfg) && \
+            inventory_file=${inventory_file}
     fi
+
+    # if the $inventory_file value is a variable (e.g $HOME), we evaluate that
+    # variable to get the value.
+    if [[ "$inventory_file" == \$* ]]; then
+        inventory_file=$(eval echo $inventory_file)
+    fi
+
     # if inventory_file points to a directory, search recursively
     [ -d "$inventory_file" ] && grep_opts="$grep_opts -hR"
     local hosts=$(ansible ${inventory_file:+-i "$inventory_file"} all --list-hosts 2>&1 \
