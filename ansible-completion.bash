@@ -155,7 +155,7 @@ _timestamp() {
 _timestamp_last_modified()  {
     local timestamp=''
 
-    if [[ "$OSTYPE" == "linux-gnu" ]]; then
+    if [[ "$OSTYPE" == "linux"* ]]; then
         # linux
         timestamp=$(stat -c "%Z" $1)
     else
