@@ -2,6 +2,7 @@
 
 _ansible-playbook() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
+    local previous_word=${COMP_WORDS[COMP_CWORD - 1]}
     local options="--ask-become-pass -k --ask-pass --ask-su-pass
                    -K --ask-sudo-pass --ask-vault-pass -b --become
                    --become-method --become-user -C --check -c
@@ -16,6 +17,8 @@ _ansible-playbook() {
 
     if [[ "$current_word" == -* ]]; then
         COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
+    elif [[ "$previous_word" == "-l" ]] || [[ "$previous_word" == "--limit" ]]; then
+        _ansible_complete_host "$current_word"
     fi
 }
 
