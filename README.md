@@ -38,7 +38,7 @@ If the `--module-path` (`-M`) or `--inventory-file` (`-i`) is on the command lin
 
 For the completion on module name, the completion script build a cache of modules names.
 
-You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION_CACHE_TIMEOUT`, the default value is `120` secondes.
+You can set the cache timeout with the environement variable `ANSIBLE_COMPLETION_CACHE_TIMEOUT`, the default value is `120` seconds.
 
 ## Contributors
 
