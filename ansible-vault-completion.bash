@@ -3,10 +3,10 @@
 _ansible-vault() {
     local current_word=${COMP_WORDS[COMP_CWORD]}
     local previous_word=${COMP_WORDS[COMP_CWORD - 1]}
-    local options="create decrypt edit encrypt rekey view"
+    local options="create decrypt edit encrypt encrypt_string rekey view"
 
     case $previous_word in
-        create|decrypt|edit|encrypt|rekey|view)
+        create|decrypt|edit|encrypt|encrypt_string|rekey|view)
             options="--debug --vault-password-file -h --help"
             if [[ "$current_word" == -* ]]; then
                 COMPREPLY=( $( compgen -W "$options" -- "$current_word" ) )
