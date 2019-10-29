@@ -37,7 +37,7 @@ _ansible_complete_host() {
         [ -f ${HOME}/.ansible.cfg ] && inventory_file=$(awk \
             '/^(hostfile[[:space:]]*=|inventory[[:space:]]*=[[:space:]]*)/{ print $3 }' ${HOME}/.ansible.cfg)
         [ -f ansible.cfg ] && inventory_file=$(awk \
-            '/^(hostfile =|inventory =)/{ print $3 }' ansible.cfg)
+            '/^(hostfile[[:space:]]*=[[:space:]]*|inventory[[:space:]]*=[[:space:]]*)/{ print $3 }' ansible.cfg)
     fi
 
     # if the $inventory_file value is a variable (e.g $HOME), we evaluate that
