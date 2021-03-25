@@ -9,6 +9,7 @@ Provide a bash completion on host name, module name and options for [ansible](ht
 [As of Ansible 2.9, you can add shell completion of the Ansible command line utilities by installing an optional dependency called argcomplete. argcomplete supports bash, and has limited support for zsh and tcsh.](https://docs.ansible.com/ansible/devel/installation_guide/intro_installation.html#shell-completion)
 
 The difference with the official auto-completion is ansible-completion support completion of the hosts, based on the inventory file, and modules.
+The official auto-completion is however much more up-to-date with all the arguments names.
 
 ## Installation
 
